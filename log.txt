@@ -1,3 +1,8 @@
+14.2.2021, 15:11:30:: "Maurice" -> logout ()
+14.2.2021, 15:09:46:: "Lon3On3" -> faceit ()
+14.2.2021, 15:09:41:: "Lon3On3" -> csgo ()
+14.2.2021, 15:09:35:: Lon3On3 versuchte bereits gebundenen Account zu binden!
+14.2.2021, 15:09:35:: "Lon3On3" -> steamid (76561198011845031)
 14.2.2021, 15:06:48:: "Maurice" -> ping ()
 14.2.2021, 15:02:25:: "Maurice" -> saa ()
 14.2.2021, 15:00:58:: "Maurice" -> csgo ()

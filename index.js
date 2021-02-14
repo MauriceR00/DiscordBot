@@ -8,6 +8,7 @@ const prefix = "!";
 const channelid = "806520416104873994";
 const steamkey = "BEDE9C3683E125B0C57AB65B5D8E0427";
 const faceitkey = "c80a34ed-820e-4cf8-a596-b3825dd66575";
+const botkey = "ODA3NjYxMDc0NzEwNzkwMTQ2.YB7O_Q.LnO6cY4D-2CQGgYyHlT-sAa0bd8";
 
 const path = './data.json';
 var read = fs.readFileSync(path);
@@ -26,6 +27,7 @@ exports.discord = Discord;
 exports.path = path;
 exports.client = client;
 exports.channelid = channelid;
+exports.botkey = botkey;
 
 fs.readdir("./events/", (err, files) => {
     files.forEach((file) => {
@@ -35,4 +37,4 @@ fs.readdir("./events/", (err, files) => {
     })
 })
 
-client.login("ODA3NjYxMDc0NzEwNzkwMTQ2.YB7O_Q.LnO6cY4D-2CQGgYyHlT-sAa0bd8");
+client.login(botkey);
