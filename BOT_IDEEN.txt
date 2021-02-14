@@ -15,4 +15,4 @@
  - Status des Servers überprüfen inkl. Spieleranzahl -> (im Channelnamen?)
 
 +Mitgliederanzahl vom Discord in einen Channelnamen anzeigen?
- - Anzeige von Online Usern, Offline User, sowie NABOKI Spieler in einen Channelnamen anzeigen?
+ - Anzeige von Online Usern, Offline User, sowie NABOKI Spieler in einen Channelnamen anzeigen? 
