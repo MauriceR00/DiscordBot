@@ -1,0 +1,18 @@
++Befehl um Reminder(Erinnerungen) setzen zu können
+ - Angabe von Datum/Uhrzeit
+ - Angabe von Grund
+ - Bestimmte Gruppen/Rollen festlegen, die diese Erinnerungen erhalten Sollen
+
++Befehl um CSGO Inventarpreis zu bekommen
+ - Normal über verlinkte SteamID
+
++Clear Befehl zum Chat löschen
+ - Mit angabe von Zahlen -> Anzahl an Nachrichten löschen
+
++RCON Steuerung des CS Servers über Discord Channel
+ - Mithilfe des Discord Channels, Befehle auf den Server ausführen
+ - Chat Nachrichten empfangen
+ - Status des Servers überprüfen inkl. Spieleranzahl -> (im Channelnamen?)
+
++Mitgliederanzahl vom Discord in einen Channelnamen anzeigen?
+ - Anzeige von Online Usern, Offline User, sowie NABOKI Spieler in einen Channelnamen anzeigen?

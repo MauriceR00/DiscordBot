@@ -3,6 +3,7 @@ const server = require("../commands/server");
 const ping = require("../commands/ping");
 const steamid = require("../commands/steamid");
 const csgo = require("../commands/csgo");
+const faceit = require("../commands/faceit");
 const axios = require('axios');
 const prefix = "!";
 
@@ -19,4 +20,5 @@ module.exports = (client, msg) => {
     if(command === "ping") return ping(msg);
     if(command === "steamid") return steamid(msg, args);
     if(command === "csgo") return csgo(msg);
+    if(command === "faceit") return faceit(msg);
 }
