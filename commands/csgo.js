@@ -18,12 +18,21 @@ module.exports = async (msg) => {
     }
     sid = index.file[id].sid;
 
-    const cs = await fetch(`https://api.steampowered.com/ISteamUserStats/GetUserStatsForGame/v2/?key=${index.steamkey}&steamid=${sid}&appid=730`).then(res => res.json());
-    if (cs === undefined) {
+    const cs = await fetch(`https://api.steampowered.com/ISteamUserStats/GetUserStatsForGame/v2/?key=${index.steamkey}&steamid=${sid}&appid=730`);
+    const text = await cs.text();
+    let a;
+    //console.log(text);
+    try {
+        a = JSON.parse(text);
+    } catch (err) {
+        writelog(`Konnte keine Daten für ${member.user.username} finden! Profil Privat? Steam Down?`);
+        return channel.send(`Konnte keine Daten für ${member.user.username} finden! Eventuell ist das Profil Privat, oder Steam ist Down! (${err})`);
+    }
+    if (!a.playerstats) {
         writelog(`Konnte keine Daten für ${member.user.username} finden! Profil Privat? Steam Down?`);
         return channel.send(`Konnte keine Daten für ${member.user.username} finden! Eventuell ist das Profil Privat, oder Steam ist Down!`);
     }
-    cs.playerstats.stats.forEach(element => {
+    a.playerstats.stats.forEach(element => {
         if (element.name === "total_kills") kills = element.value;
         if (element.name === "total_deaths") deaths = element.value;
         if (element.name === "total_planted_bombs") plantedbombs = element.value;
