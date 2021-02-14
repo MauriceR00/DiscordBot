@@ -47,4 +47,4 @@ fs.readdir("./events/", (err, files) => {
     })
 })
 
-client.login(botkey);
+client.login(botkey); 
