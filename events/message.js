@@ -4,6 +4,7 @@ const ping = require("../commands/ping");
 const steamid = require("../commands/steamid");
 const csgo = require("../commands/csgo");
 const faceit = require("../commands/faceit");
+const writelog = require('../methods/writelog');
 const axios = require('axios');
 const prefix = "!";
 
@@ -14,6 +15,8 @@ module.exports = (client, msg) => {
     const commandBody = msg.content.slice(prefix.length);
     const args = commandBody.split(' ');
     const command = args.shift().toLowerCase();
+
+    writelog(`"${msg.author.username}" -> ${command} (${args})`);
 
     if(command === "logout") return logout(msg);
     if(command === "server") return server(msg);
