@@ -1,6 +1,7 @@
 const fetch = require('node-fetch');
 const index = require('../index');
 const writelog = require('../methods/writelog');
+const setPresence = require('../methods/setPresence');
 
 module.exports = async (msg, id) => {
     const member = msg.member;
@@ -18,6 +19,9 @@ module.exports = async (msg, id) => {
     let usrid = id[0];
     let sid = id[1];
 
+    msg.channel.startTyping();
+    setPresence("Sammle Informationen...", "WATCHING");
+
     if(index.file[usrid]) {
         msg.delete();
         writelog(`${member.user.username} versuchte bereits gebundenen Account zu binden!`);
@@ -31,7 +35,7 @@ module.exports = async (msg, id) => {
         return channel.send(`Keine SteamID unter ${sid} gefunden!`);
     }
     let ids = JSON.stringify(result.response.players[0].steamid).replaceAll('"', '');
-    console.log(ids);
+    //console.log(ids);
     const faceit = await fetch(`https://open.faceit.com/data/v4/players?game=csgo&game_player_id=${ids}`, { method: 'GET', headers: { 'Content-Type': 'application/json', 'Authorization': "Bearer " + index.faceitkey }} ).then(fcres => fcres.json());
     if(faceit === undefined) {
         writelog(`Kein FaceIT Account unter ${ids} gefunden! (${member.user.username})`);
@@ -39,9 +43,11 @@ module.exports = async (msg, id) => {
     }
     let fcid = JSON.stringify(faceit.player_id).replaceAll('"', '');
     index.file[usrid] = { sid: ids, fic: fcid };
-    console.log(fcid);
+    //console.log(fcid);
     index.fs.writeFileSync(index.path, JSON.stringify(index.file, null, 2));
     let usr = index.client.users.cache.find(u => u.id === usrid);
     writelog(`SteamID (${ids}) & FaceIT ID (${fcid}) zu Discord ACC von ${usr.username} gebunden!`);
+    msg.channel.stopTyping();
+    setPresence("NABOKI", "WATCHING");
     return channel.send(`SteamID (${ids}) und FaceIT ID (${fcid}) zum Discord Account von ${usr.username} gebunden!`);
 }

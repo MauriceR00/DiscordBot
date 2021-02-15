@@ -5,4 +5,5 @@ module.exports = (text) => {
     var readlog = index.fs.readFileSync(log);
     var dt = new Date().toLocaleString();
     var writelog = index.fs.writeFileSync(log, `${dt}:: ${text}\n${readlog}`);
+    console.log(text);
 }

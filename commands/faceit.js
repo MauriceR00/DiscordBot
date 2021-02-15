@@ -2,6 +2,7 @@ const fetch = require('node-fetch');
 const index = require('../index');
 const csgo = require('./csgo');
 const writelog = require('../methods/writelog');
+const setPresence = require('../methods/setPresence');
 
 module.exports = async (msg) => {
     const member = msg.member;
@@ -10,7 +11,7 @@ module.exports = async (msg) => {
 
     let fic, sid, m, w, cws, kd, wr, lws, ah, sl, elo;
 
-    if(channel.id !== index.channelid) return;
+    if (channel.id !== index.channelid) return;
 
     if (!index.file[id]) {
         msg.delete();
@@ -18,6 +19,9 @@ module.exports = async (msg) => {
     }
     fic = index.file[id].fic;
     sid = index.file[id].sid;
+
+    msg.channel.startTyping();
+    setPresence("Sammle Informationen...", "WATCHING");
 
     var header = {
         'Content-Type': 'application/json',
@@ -51,6 +55,9 @@ module.exports = async (msg) => {
         .addField('Average Headshot %', ah, true)
         .addField('FaceIT Level', sl, true)
         .addField('ELO', elo, true);
+
+    msg.channel.stopTyping();
+    setPresence("NABOKI", "WATCHING");
 
     return channel.send(mbd);
 }

@@ -2,14 +2,16 @@
   "dependencies": {
     "axios": "^0.21.1",
     "discord.js": "^12.5.1",
+    "dotenv": "^8.2.0",
     "node-fetch": "^2.6.1"
   },
   "name": "DiscordBot",
   "version": "1.0.0",
   "main": "nabokibot.js",
+  "types": "./typings/index.d.ts",
   "scripts": {
     "start": "node index.js",
-	"dev": "nodemon index.js"
+    "dev": "nodemon index.js"
   },
   "keywords": [],
   "author": "",

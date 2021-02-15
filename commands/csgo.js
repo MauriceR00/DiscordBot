@@ -2,6 +2,7 @@ const fetch = require('node-fetch');
 const index = require('../index');
 const rtt = require('../methods/roundToTwo');
 const writelog = require('../methods/writelog');
+const setPresence = require('../methods/setPresence');
 
 module.exports = async (msg) => {
     const member = msg.member;
@@ -18,10 +19,12 @@ module.exports = async (msg) => {
     }
     sid = index.file[id].sid;
 
+    msg.channel.startTyping();
+    setPresence("Sammle Informationen...", "WATCHING");
+
     const cs = await fetch(`https://api.steampowered.com/ISteamUserStats/GetUserStatsForGame/v2/?key=${index.steamkey}&steamid=${sid}&appid=730`);
     const text = await cs.text();
     let a;
-    //console.log(text);
     try {
         a = JSON.parse(text);
     } catch (err) {
@@ -62,6 +65,9 @@ module.exports = async (msg) => {
         .addField('Shots Fired', shotsfired, true)
         .addField('Shots Hit', shotshit, true)
         .addField('MVPs', mvps, true);
+
+    msg.channel.stopTyping();
+    setPresence("NABOKI", "WATCHING");
 
     return channel.send(mbd);
 }

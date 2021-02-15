@@ -8,4 +8,5 @@ module.exports = (client, member) => {
         .setTitle(`Willkommen ${member.user.username} auf dem NABOKI Discord Server!`)
         .setDescription("Wir hoffen du hast einen angenehmen Aufenthalt.\nWir sind fast jeden Abend präsent und freuen uns auf dich!");
     w_channel.send(w_embed);
+    return;
 }
