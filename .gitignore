@@ -5,3 +5,4 @@ BOT_IDEEN.txt
 typings/
 node_modules/
 workspace.code-workspace
+.env
