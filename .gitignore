@@ -6,3 +6,4 @@ typings/
 node_modules/
 workspace.code-workspace
 .env
+.env
