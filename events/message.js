@@ -7,6 +7,7 @@ const faceit = require("../commands/faceit");
 const writelog = require('../methods/writelog');
 const axios = require('axios');
 const setsteamid = require("../commands/setsteamid");
+const clear = require("../commands/clear");
 const prefix = "!";
 
 module.exports = (client, msg) => {
@@ -26,4 +27,5 @@ module.exports = (client, msg) => {
     if(command === "csgo") return csgo(msg);
     if(command === "faceit") return faceit(msg);
     if(command === "setsteamid") return setsteamid(msg, args);
+    if(command === "clear") return clear(msg, args);
 }

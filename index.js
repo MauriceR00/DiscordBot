@@ -4,6 +4,7 @@ const client = new Discord.Client();
 const fs = require('fs');
 const csgostatus = require('./methods/csgostatus');
 const writelog = require('./methods/writelog');
+const userAmount = require('./methods/userAmount');
 
 
 const prefix = "!";
@@ -19,6 +20,7 @@ let sec, days, hours, min, seconds;
 
 setInterval(() => {
     csgostatus();
+    userAmount();
 }, 10000)
 
 
