@@ -22,8 +22,10 @@ let sec, days, hours, min, seconds;
 
 setInterval(() => {
     csgostatus();
+}, 10000);
+setInterval(() => {
     userAmount();
-}, 10000)
+}, 30000);
 
 
 exports.steamkey = steamkey;

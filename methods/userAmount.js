@@ -20,12 +20,12 @@ module.exports = () => {
 
     const c1 = bot.channels.cache.get(ch1);
     const c2 = bot.channels.cache.get(ch2);
-    const c3 = bot.channels.cache.get(ch3);
-    const c4 = bot.channels.cache.get(ch4);
+    //const c3 = bot.channels.cache.get(ch3);
+    //const c4 = bot.channels.cache.get(ch4);
 
-    c1.setName(`${ch1n}${guild.memberCount.toLocaleString()}`);
-    c2.setName(`${ch2n}${guild.members.cache.filter(m => m.presence.status !== "offline").size}`);
-    c3.setName(`${ch3n}${guild.members.cache.filter(m => m.roles.cache.has("708412403737559111") || m.roles.cache.has("708411222663364630") && m.presence.status !== "offline").size}`);
-    c4.setName(`${ch4n}${guild.members.cache.filter(m => m.roles.cache.has("726909303075635261") && m.presence.status !== "offline").size}`);
+    c1.setName(`${ch2n}${guild.members.cache.filter(m => m.presence.status !== "offline").size} ᴠᴏɴ ${guild.memberCount.toLocaleString()}`);
+    //c2.setName(`${ch2n}${guild.members.cache.filter(m => m.presence.status !== "offline").size}`);
+    c2.setName(`${ch3n}${guild.members.cache.filter(m => m.roles.cache.has("708412403737559111") && m.presence.status !== "offline" || m.roles.cache.has("708411222663364630") && m.presence.status !== "offline").size}`);
+    //c4.setName(`${ch4n}${guild.members.cache.filter(m => m.roles.cache.has("726909303075635261") && m.presence.status !== "offline").size}`);
 
 }
