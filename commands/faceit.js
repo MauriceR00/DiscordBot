@@ -11,15 +11,20 @@ module.exports = async (msg) => {
 
     let fic, sid, m, w, cws, kd, wr, lws, ah, sl, elo;
 
-    if (channel.id !== index.channelid) return;
+    if (channel.id !== index.channelid) return msg.delete();
+    if(index.fetchrequest) {
+        msg.delete();
+        return channel.send(`Aktuell läuft eine Abfrage. Bitte warte bis diese Beendet ist!`);
+    }
 
     if (!index.file[id]) {
         msg.delete();
-        return channel.send(`Du hast keine SteamID zu deinen Account gebunden! Bitte benutze "!steamid"`);
+        return channel.send(`Du hast keine SteamID zu deinen Account gebunden! Bitte benutze **!steamid**`);
     }
     fic = index.file[id].fic;
     sid = index.file[id].sid;
 
+    index.fetchrequest = true;
     msg.channel.startTyping();
     setPresence("Sammle Informationen...", "WATCHING");
 
@@ -30,6 +35,7 @@ module.exports = async (msg) => {
 
     const f1 = await fetch(`https://open.faceit.com/data/v4/players/${fic}/stats/csgo`, { method: 'GET', headers: header }).then(res => res.json());
     if (f1 === undefined) {
+        index.fetchrequest = false;
         writelog(`Konnte keine Daten für ${member.user.username} finden! FaceIT API Down?`);
         return channel.send(`Konnte keine Daten für ${member.user.username} finden! Eventuell ist die FaceIT API Down`);
     }
@@ -38,6 +44,7 @@ module.exports = async (msg) => {
 
     const f2 = await fetch(`https://open.faceit.com/data/v4/players?game=csgo&game_player_id=${sid}`, { method: 'GET', headers: header }).then(res => res.json());
     if (f2 === undefined) {
+        index.fetchrequest = false;
         writelog(`Konnte keine Daten für ${member.user.username} finden! FaceIT API Down?`);
         return channel.send(`Konnte keine Daten für ${member.user.username} finden! Eventuell ist die FaceIT API Down`);
     }
@@ -56,6 +63,7 @@ module.exports = async (msg) => {
         .addField('FaceIT Level', sl, true)
         .addField('ELO', elo, true);
 
+    index.fetchrequest = false;
     msg.channel.stopTyping();
     setPresence("NABOKI", "WATCHING");
 

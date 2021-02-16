@@ -13,6 +13,8 @@ const botkey = process.env.BOT_TOKEN;
 const steamkey = process.env.STEAM;
 const faceitkey = process.env.FACEIT;
 
+var fetchrequest = false;
+
 const path = './data.json';
 var read = fs.readFileSync(path);
 var file = JSON.parse(read);
@@ -33,6 +35,7 @@ exports.path = path;
 exports.client = client;
 exports.channelid = channelid;
 exports.botkey = botkey;
+exports.fetchrequest = fetchrequest;
 
 fs.readdir("./events/", (err, files) => {
     files.forEach((file) => {

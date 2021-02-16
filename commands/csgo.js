@@ -11,14 +11,19 @@ module.exports = async (msg) => {
 
     let sid, kills, deths, plantedbombs, defusedbombs, hostages, knifekills, headshots, shotsfired, shotshit, mvps, kd, headshotp;
 
-    if(channel.id !== index.channelid) return;
+    if(channel.id !== index.channelid) return msg.delete();
+    if(index.fetchrequest) {
+        msg.delete();
+        return channel.send(`Aktuell läuft eine Abfrage. Bitte warte bis diese Beendet ist!`);
+    }
 
     if(!index.file[id]) {
         msg.delete();
-        return channel.send(`Du hast keine SteamID zu deinen Account gebunden! Bitte benutze "!steamid"`);
+        return channel.send(`Du hast keine SteamID zu deinen Account gebunden! Bitte benutze **!steamid**`);
     }
     sid = index.file[id].sid;
 
+    index.fetchrequest = true;
     msg.channel.startTyping();
     setPresence("Sammle Informationen...", "WATCHING");
 
@@ -28,10 +33,12 @@ module.exports = async (msg) => {
     try {
         a = JSON.parse(text);
     } catch (err) {
+        index.fetchrequest = false;
         writelog(`Konnte keine Daten für ${member.user.username} finden! Profil Privat? Steam Down?`);
         return channel.send(`Konnte keine Daten für ${member.user.username} finden! Eventuell ist das Profil Privat, oder Steam ist Down! (${err})`);
     }
     if (!a.playerstats) {
+        index.fetchrequest = false;
         writelog(`Konnte keine Daten für ${member.user.username} finden! Profil Privat? Steam Down?`);
         return channel.send(`Konnte keine Daten für ${member.user.username} finden! Eventuell ist das Profil Privat, oder Steam ist Down!`);
     }
@@ -66,6 +73,7 @@ module.exports = async (msg) => {
         .addField('Shots Hit', shotshit, true)
         .addField('MVPs', mvps, true);
 
+    index.fetchrequest = false;
     msg.channel.stopTyping();
     setPresence("NABOKI", "WATCHING");
 
