@@ -21,6 +21,7 @@ module.exports = (msg, args) => {
 
         msg.channel.startTyping();
         setPresence("Lösche Nachrichten...", "WATCHING");
+        msg.delete();
 
         channel.bulkDelete(amt, true).then(mes => {
             const embed = new MessageEmbed()
