@@ -1,4 +1,3 @@
-const fetch = require('node-fetch');
 const index = require('../index');
 const rtt = require('../methods/roundToTwo');
 const writelog = require('../methods/writelog');
@@ -8,74 +7,57 @@ module.exports = async (msg) => {
     const member = msg.member;
     const channel = msg.channel;
     const id = member.id;
+    let steam = index.steam;
 
-    let sid, kills, deths, plantedbombs, defusedbombs, hostages, knifekills, headshots, shotsfired, shotshit, mvps, kd, headshotp;
 
-    if(channel.id !== index.channelid) return msg.delete();
-    if(index.fetchrequest) {
-        msg.delete();
-        return channel.send(`Aktuell läuft eine Abfrage. Bitte warte bis diese Beendet ist!`);
-    }
+    //if(channel.id !== "953378480282828861") return;
 
     if(!index.file[id]) {
-        msg.delete();
-        return channel.send(`Du hast keine SteamID zu deinen Account gebunden! Bitte benutze **!steamid**`);
+        writelog(`${member.user.username} hat kein Steam Profil zum Discord Account gebunden!`);
+        return channel.send(`Du hast keine Steam Profil zu deinen Account gebunden! Bitte benutze **!steamid**`);
     }
-    sid = index.file[id].sid;
 
-    index.fetchrequest = true;
+    let steamid = index.file[id].sid;
+
     msg.channel.startTyping();
-    setPresence("Sammle Informationen...", "WATCHING");
+    setPresence("🦊 Sammle Informationen...", "WATCHING");
 
-    const cs = await fetch(`https://api.steampowered.com/ISteamUserStats/GetUserStatsForGame/v2/?key=${index.steamkey}&steamid=${sid}&appid=730`);
-    const text = await cs.text();
-    let a;
-    try {
-        a = JSON.parse(text);
-    } catch (err) {
-        index.fetchrequest = false;
-        writelog(`Konnte keine Daten für ${member.user.username} finden! Profil Privat? Steam Down?`);
-        return channel.send(`Konnte keine Daten für ${member.user.username} finden! Eventuell ist das Profil Privat, oder Steam ist Down! (${err})`);
-    }
-    if (!a.playerstats) {
-        index.fetchrequest = false;
-        writelog(`Konnte keine Daten für ${member.user.username} finden! Profil Privat? Steam Down?`);
-        return channel.send(`Konnte keine Daten für ${member.user.username} finden! Eventuell ist das Profil Privat, oder Steam ist Down!`);
-    }
-    a.playerstats.stats.forEach(element => {
-        if (element.name === "total_kills") kills = element.value;
-        if (element.name === "total_deaths") deaths = element.value;
-        if (element.name === "total_planted_bombs") plantedbombs = element.value;
-        if (element.name === "total_defused_bombs") defusedbombs = element.value;
-        if (element.name === "total_rescued_hostages") hostages = element.value;
-        if (element.name === "total_kills_knife") knifekills = element.value;
-        if (element.name === "total_kills_headshot") headshots = element.value;
-        if (element.name === "total_shots_fired") shotsfired = element.value;
-        if (element.name === "total_shots_hit") shotshit = element.value;
-        if (element.name === "total_mvps") mvps = element.value;
+    let usersummary = await steam.getUserSummary(steamid).then(p => { return p; } ).catch(err => { writelog(`ERROR: ${err}`); });
+    let userstats = await steam.getUserStats(steamid, "730").then(p => { return p; } ).catch(err => { writelog(`ERROR: ${err}`); });
+
+    kd = rtt(userstats.stats.total_kills / userstats.stats.total_deaths);
+    headshotp = rtt((userstats.stats.total_kills_headshot * 100) / userstats.stats.total_kills);
+
+    let asd;
+    await index.csgoi.requestPlayersProfile(steamid, function(data) {
+        asd = data.account_id;
+        //data.ranking.wins
+        //data.ranking.rank_id
+        return console.log(asd);
     });
-    kd = rtt(kills / deaths);
-    headshotp = rtt((headshots * 100) / kills);
+    //console.log(a);
+
 
     let mbd = new index.discord.MessageEmbed()
         .setColor(1848932)
-        .setTitle(`CSGO Stats für ${member.user.username}`)
-        .addField('Kills', kills, true)
-        .addField('Deaths', deaths, true)
+        .setThumbnail(usersummary.avatar.large)
+        .setTitle(`CSGO Stats für ${usersummary.nickname}`)
+        .setURL(`${usersummary.url}`)
+        .addField('Kills', userstats.stats.total_kills, true)
+        .addField('Deaths', userstats.stats.total_deaths, true)
         .addField('K/D', kd, true)
-        .addField('Planted Bombs', plantedbombs, true)
-        .addField('Defused Bombs', defusedbombs, true)
-        .addField('Hostages Rescued', hostages, true)
-        .addField('Knife Kills', knifekills, true)
-        .addField('Headshots', headshots, true)
+        .addField('Planted Bombs', userstats.stats.total_planted_bombs, true)
+        .addField('Defused Bombs', userstats.stats.total_defused_bombs, true)
+        .addField('HE Grenade Kills', userstats.stats.total_kills_hegrenade, true)
+        .addField('Knife Kills', userstats.stats.total_kills_knife, true)
+        .addField('Headshots Kills', userstats.stats.total_kills_headshot, true)
         .addField('Headshot %', headshotp, true)
-        .addField('Shots Fired', shotsfired, true)
-        .addField('Shots Hit', shotshit, true)
-        .addField('MVPs', mvps, true);
+        .addField('Shots Fired', userstats.stats.total_shots_fired, true)
+        .addField('Shots Hit', userstats.stats.total_shots_hit, true)
+        .addField('MVPs', userstats.stats.total_mvps, true);
 
-    index.fetchrequest = false;
+
+    setPresence(`FuXTrupp 🦊`, `WATCHING`);
     msg.channel.stopTyping();
-    setPresence("NABOKI", "WATCHING");
-
-    return channel.send(mbd);
+    channel.send(mbd);
 }
