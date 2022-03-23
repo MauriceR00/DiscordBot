@@ -4,7 +4,6 @@ const steamid = require('../commands/steamid');
 const removesteamid = require('../commands/removesteamid');
 const setsteamid = require('../commands/setsteamid');
 const faceit = require('../commands/faceit');
-const { Channel } = require('discord.js');
 const prefix = '!';
 
 module.exports = (client, msg) => {
