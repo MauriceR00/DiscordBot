@@ -1,6 +1,4 @@
-const fetch = require('node-fetch');
 const index = require('../index');
-const csgo = require('./csgo');
 const writelog = require('../methods/writelog');
 const setPresence = require('../methods/setPresence');
 
@@ -8,64 +6,45 @@ module.exports = async (msg) => {
     const member = msg.member;
     const channel = msg.channel;
     const id = member.id;
+    let faceit = index.faceapi;
+    let steam = index.steam;
 
-    let fic, sid, m, w, cws, kd, wr, lws, ah, sl, elo;
-
-    if (channel.id !== index.channelid) return msg.delete();
-    if(index.fetchrequest) {
-        msg.delete();
-        return channel.send(`Aktuell läuft eine Abfrage. Bitte warte bis diese Beendet ist!`);
-    }
-
+    if(channel.id !== "953378480282828861") return;
+    
     if (!index.file[id]) {
-        msg.delete();
-        return channel.send(`Du hast keine SteamID zu deinen Account gebunden! Bitte benutze **!steamid**`);
+        writelog(`${member.user.username} hat kein Steam Profil zum Discord Account gebunden!`);
+        return channel.send(`Du hast keine Steam Profil zu deinen Account gebunden! Bitte benutze **!steamid**`);
     }
-    fic = index.file[id].fic;
-    sid = index.file[id].sid;
 
-    index.fetchrequest = true;
+    let faceitid = index.file[id].fic;
+    let steamid = index.file[id].sid;
+
     msg.channel.startTyping();
-    setPresence("Sammle Informationen...", "WATCHING");
+    setPresence("🦊 Sammle Informationen...", "WATCHING");
 
-    var header = {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + index.faceitkey
-    }
-
-    const f1 = await fetch(`https://open.faceit.com/data/v4/players/${fic}/stats/csgo`, { method: 'GET', headers: header }).then(res => res.json());
-    if (f1 === undefined) {
-        index.fetchrequest = false;
-        writelog(`Konnte keine Daten für ${member.user.username} finden! FaceIT API Down?`);
-        return channel.send(`Konnte keine Daten für ${member.user.username} finden! Eventuell ist die FaceIT API Down`);
-    }
-    m = f1.lifetime["Matches"], w = f1.lifetime["Wins"], cws = f1.lifetime["Current Win Streak"], kd = f1.lifetime["Average K/D Ratio"], wr = f1.lifetime["Win Rate %"], lws = f1.lifetime["Longest Win Streak"], ah = f1.lifetime["Average Headshots %"];
-
-
-    const f2 = await fetch(`https://open.faceit.com/data/v4/players?game=csgo&game_player_id=${sid}`, { method: 'GET', headers: header }).then(res => res.json());
-    if (f2 === undefined) {
-        index.fetchrequest = false;
-        writelog(`Konnte keine Daten für ${member.user.username} finden! FaceIT API Down?`);
-        return channel.send(`Konnte keine Daten für ${member.user.username} finden! Eventuell ist die FaceIT API Down`);
-    }
-    sl = f2.games.csgo["skill_level"], elo = f2.games.csgo["faceit_elo"];
+    let usersummary = await steam.getUserSummary(steamid).then(p => { return p; } ).catch(err => { writelog(`ERROR: ${err}`); });
+    let fcl = await faceit.pl(steamid).then(data => { return data}).catch(err => { writelog(`${err}`); channel.send(`${err}`) });
+    let fcp = await faceit.players(faceitid, "stats", "csgo").then(data => { return data }).catch(err => { writelog(`${err}`); channel.send(`${err}`) });
 
     let mbd = new index.discord.MessageEmbed()
-        .setColor(1848932)
-        .setTitle(`FaceIT Stats für ${member.user.username}`)
-        .addField('Matches Played', m, true)
-        .addField('Matches Won', w, true)
-        .addField('Winstreak', cws, true)
-        .addField('K/D', kd, true)
-        .addField('Winrate %', wr, true)
-        .addField('Longest Winstreak', lws, true)
-        .addField('Average Headshot %', ah, true)
-        .addField('FaceIT Level', sl, true)
-        .addField('ELO', elo, true);
+    .setColor(1848932)
+    .setThumbnail(usersummary.avatar.large)
+    .setTitle(`FaceIT Stats für ${usersummary.nickname}`)
+    .setURL(`${usersummary.url}`)
+    .addField('Matches Played', fcp.lifetime["Matches"], true)
+    .addField('Matches Won', fcp.lifetime["Wins"], true)
+    .addField('Win Streak', fcp.lifetime["Current Win Streak"], true)
+    .addField('K/D', fcp.lifetime["Average K/D Ratio"], true)
+    .addField('Winrate %', fcp.lifetime["Win Rate %"], true)
+    .addField('Longest Win Streak', fcp.lifetime["Longest Win Streak"], true)
+    .addField('Average Headshot %', fcp.lifetime["Average Headshots %"], true)
+    .addField('FaceIT Level', fcl.games.csgo.skill_level, true)
+    .addField('ELO', fcl.games.csgo.faceit_elo, true)
+    .addField('Last 5 Matches', fcp.lifetime["Recent Results"].toString().replaceAll(",", "").replaceAll("0", "❌").replaceAll("1", "🏆").replaceAll("null", ""), true);
 
-    index.fetchrequest = false;
+    setPresence(`FuXTrupp 🦊`, `WATCHING`);
     msg.channel.stopTyping();
-    setPresence("NABOKI", "WATCHING");
 
-    return channel.send(mbd);
+    channel.send(mbd);
+
 }
