@@ -2,31 +2,25 @@ require("dotenv").config()
 const Discord = require('discord.js');
 const client = new Discord.Client();
 const fs = require('fs');
-const csgostatus = require('./methods/csgostatus');
-const writelog = require('./methods/writelog');
-const userAmount = require('./methods/userAmount');
+const SteamAPI = require('steamapi');
+const Faceit = require('faceit-js');
+
+const SteamUser = require('steam-user');
+const GlobalOffensive = require('globaloffensive');
+var clnt = new SteamUser();
+let csgo = new GlobalOffensive(clnt);
 
 
-const prefix = "!";
-const channelid = "806520416104873994";
 const botkey = process.env.BOT_TOKEN;
 const steamkey = process.env.STEAM;
 const faceitkey = process.env.FACEIT;
-
-var fetchrequest = false;
-
 const path = './data.json';
+const steam = new SteamAPI(steamkey);
+const faceapi = new Faceit(faceitkey);
+
 var read = fs.readFileSync(path);
 var file = JSON.parse(read);
-let sec, days, hours, min, seconds;
-
-setInterval(() => {
-    csgostatus();
-}, 10000);
-setInterval(() => {
-    userAmount();
-}, 30000);
-
+var fetchrequest = false;
 
 exports.steamkey = steamkey;
 exports.faceitkey = faceitkey;
@@ -35,9 +29,13 @@ exports.file = file;
 exports.discord = Discord;
 exports.path = path;
 exports.client = client;
-exports.channelid = channelid;
 exports.botkey = botkey;
 exports.fetchrequest = fetchrequest;
+exports.steam = steam;
+exports.faceapi = faceapi;
+exports.csgoi = csgo;
+
+faceapi.account().then(data => console.log(data));
 
 fs.readdir("./events/", (err, files) => {
     files.forEach((file) => {
@@ -47,4 +45,44 @@ fs.readdir("./events/", (err, files) => {
     })
 })
 
-client.login(botkey); 
+
+clnt.logOn({
+	"accountName": "NOPE",
+	"password": "NOPE"
+});
+
+clnt.on('loggedOn', function() {
+	console.log("Logged into Steam");
+	clnt.setPersona(SteamUser.EPersonaState.Invisible);
+	clnt.gamesPlayed([730]);
+});
+
+
+clnt.on('error', function(a) {
+	console.log(a);
+});
+
+csgo.on('debug', console.log);
+
+client.on('friendRelationship', function(steamID, relationship) {
+    //if (relationship == SteamUser.Steam.EFriendRelationship.RequestRecipient) {
+        client.addFriend(steamID);
+        console.log(`Added ${steamID}`);
+    //}
+});
+
+
+client.on('friendsList', function () {
+    for (var i = 0; i < Object.keys(client.myFriends).length; i++) {
+        if (client.myFriends[Object.keys(client.myFriends)[i]] == SteamUser.EFriendRelationship.RequestRecipient) {
+            console.log('Added ' + Object.keys(client.myFriends)[i]);
+            client.addFriend(Object.keys(client.myFriends)[i]);
+        }
+    }
+});
+
+client.login(botkey);
+
+csgo.on("connectedToGC", function() {
+    console.log("Connected to GC");
+})
