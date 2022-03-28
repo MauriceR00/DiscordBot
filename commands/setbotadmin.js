@@ -12,5 +12,6 @@ module.exports = (msg, args) => {
 
     index.file[guild_id].botadmin = args[0];
     index.fs.writeFileSync(index.path, JSON.stringify(index.file, null, 2));
-    return channel.send("Bot Admin wurde gesetzt!");
+    channel.send("Bot Admin wurde gesetzt!")
+    return;
 } 
