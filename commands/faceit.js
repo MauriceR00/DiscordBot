@@ -1,15 +1,15 @@
 const index = require('../index');
 const writelog = require('../methods/writelog');
-const setPresence = require('../methods/setPresence');
 
 module.exports = async (msg) => {
     const member = msg.member;
     const channel = msg.channel;
+    const guild_id = msg.guild.id;
     const id = member.id;
     let faceit = index.faceapi;
     let steam = index.steam;
 
-    if(channel.id !== "953378480282828861") return;
+    if(channel.id !== (index.file[guild_id].mainchannel)) return;
     
     if (!index.file[id]) {
         writelog(`${member.user.username} hat kein Steam Profil zum Discord Account gebunden!`);
@@ -20,7 +20,6 @@ module.exports = async (msg) => {
     let steamid = index.file[id].sid;
 
     msg.channel.startTyping();
-    setPresence("🦊 Sammle Informationen...", "WATCHING");
 
     let usersummary = await steam.getUserSummary(steamid).then(p => { return p; } ).catch(err => { writelog(`ERROR: ${err}`); });
     let fcl = await faceit.pl(steamid).then(data => { return data}).catch(err => { writelog(`${err}`); channel.send(`${err}`) });
@@ -42,7 +41,6 @@ module.exports = async (msg) => {
     .addField('ELO', fcl.games.csgo.faceit_elo, true)
     .addField('Last 5 Matches', fcp.lifetime["Recent Results"].toString().replaceAll(",", "").replaceAll("0", "❌").replaceAll("1", "🏆").replaceAll("null", ""), true);
 
-    setPresence(`FuXTrupp 🦊`, `WATCHING`);
     msg.channel.stopTyping();
 
     channel.send(mbd);
