@@ -12,5 +12,6 @@ module.exports = (msg, args) => {
 
     index.file[guild_id].mainchannel = channel.id;
     index.fs.writeFileSync(index.path, JSON.stringify(index.file, null, 2));
-    return channel.send("Mainchannel wurde auf diesen Channel gesetzt!");
+    channel.send("Mainchannel wurde auf diesen Channel gesetzt!")
+    return;
 } 
