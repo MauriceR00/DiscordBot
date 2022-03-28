@@ -1,9 +1,5 @@
 const writelog = require('../methods/writelog');
-const csgo = require('../commands/csgo');
-const steamid = require('../commands/steamid');
-const removesteamid = require('../commands/removesteamid');
-const setsteamid = require('../commands/setsteamid');
-const faceit = require('../commands/faceit');
+const index = require('../index');
 const prefix = '!';
 
 module.exports = (client, msg) => {
@@ -17,9 +13,13 @@ module.exports = (client, msg) => {
 
     writelog(`"${msg.author.username}" -> ${command} (${args})`);
 
-    if(command === "csgo") return csgo(msg);
-    if(command === "steamid") return steamid(msg, args);
-    if(command === "removesteamid") return removesteamid(msg);
-    if(command === "setsteamid") return setsteamid(msg, args);
-    if(command === "faceit") return faceit(msg);
+    index.fs.readdir("./commands/", (err, files) => {
+        files.forEach((file) => {
+            const eventName = file.split(".")[0];
+            if(command === eventName) {
+                const commandHandler = require(`../commands/${file}`);
+                return commandHandler(msg, args);
+            }
+        })
+    })
 }
